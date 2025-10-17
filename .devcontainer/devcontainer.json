@@ -1,0 +1,18 @@
+{
+    "name": "React Dev Container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "react-app",
+    "workspaceFolder": "/app",
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "terminal.integrated.shell.linux": "/bin/sh"
+        },
+        "extensions": [
+          "dbaeumer.vscode-eslint",
+          "esbenp.prettier-vscode"
+        ]
+      }
+    },
+    "forwardPorts": [3000]
+  }
