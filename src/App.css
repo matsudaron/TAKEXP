@@ -7,34 +7,111 @@
   font-family: sans-serif;
 }
 
+/* カード */
 .top-card {
   background: #1e293b;
   padding: 16px;
   border-radius: 12px;
-  margin: 20px 0;
+  margin: 16px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
+/* 入力 */
+.task-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #0f172a;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.task-input::placeholder {
+  color: #64748b;
+}
+
+/* XPバー */
 .exp-bar {
   width: 100%;
   height: 12px;
   background: #334155;
   border-radius: 6px;
   overflow: hidden;
+  margin-bottom: 8px;
 }
 
 .exp-fill {
   height: 100%;
-  background: #38bdf8;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
   transition: width 0.4s ease;
 }
 
+/* ボタン横並び */
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* XPボタン */
 .take-xp-button {
+  flex: 1;
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
   background: #ffb514;
   cursor: pointer;
   font-weight: bold;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.take-xp-button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.take-xp-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 削除ボタン */
+.delete-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.delete-button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* 追加ボタン */
+.add-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: 2px dashed #38bdf8;
+  border-radius: 10px;
+  background: transparent;
+  color: #38bdf8;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s, color 0.2s;
+}
+
+.add-button:hover {
+  background: #38bdf8;
+  color: #0f172a;
 }
 
 /* ヘッダー */
@@ -42,7 +119,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 16px 0;
 }
 
 .logo {
@@ -66,6 +143,7 @@
   font-weight: bold;
 }
 
+/* メイン */
 .main {
   padding: 10px 0;
 }
