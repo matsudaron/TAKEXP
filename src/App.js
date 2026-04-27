@@ -2,11 +2,19 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 const Top = () => {
-
+  const today = new Date().toDateString();
   const [tasks, setTasks] = useState(() => {
   const saved = localStorage.getItem("tasks");
-  return saved ? JSON.parse(saved) : [
-    { id: 1, name: "通常XP", xp: 0 }
+
+  if (saved) {
+    return JSON.parse(saved).map((task) => ({
+      ...task,
+      lastClaimed: task.lastClaimed ?? null
+    }));
+  }
+
+  return [
+    { id: 1, name: "通常XP", xp: 0, lastClaimed: null }
   ];
 });
 
@@ -18,7 +26,6 @@ const Top = () => {
   // XP加算
   const DEV_MODE = false; // ←テスト時はtrueに変更
   const handleGainXp = (id) => {
-  const today = new Date().toDateString();
 
   setTasks((prev) =>
     prev.map((task) => {
@@ -106,7 +113,7 @@ const Top = () => {
               <button
                 className="take-xp-button"
                 onClick={() => handleGainXp(task.id)}
-                disabled={task.lastClaimed === new Date().toDateString()}
+                disabled={task.lastClaimed === today}
               >
                 ＋5 XP
               </button>
