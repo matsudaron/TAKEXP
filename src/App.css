@@ -1,45 +1,95 @@
-/* トップ */
+/* =====================
+   ベース
+===================== */
 .top-container {
   padding: 20px;
   min-height: 100vh;
-  background: #0f172a;
+  background: radial-gradient(circle at top, #0f172a, #020617);
   color: white;
   font-family: sans-serif;
 }
 
-/* カード */
+/* =====================
+   カード
+===================== */
 .top-card {
   background: #1e293b;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin: 16px 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  transition: transform 0.2s, opacity 0.3s, filter 0.3s;
 }
 
-/* 入力 */
+.top-card:hover {
+  transform: translateY(-3px);
+}
+
+/* 完了カード */
+.top-card.done {
+  opacity: 0.35;
+  filter: grayscale(1);
+  transform: scale(0.98);
+}
+
+/* =====================
+   入力
+===================== */
 .task-input {
   width: 100%;
   padding: 10px;
   margin-bottom: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   background: #0f172a;
   color: white;
   font-size: 14px;
   outline: none;
   box-sizing: border-box;
+  transition: box-shadow 0.2s;
+}
+
+.task-input:focus {
+  box-shadow: 0 0 0 2px #38bdf8;
 }
 
 .task-input::placeholder {
   color: #64748b;
 }
 
-/* XPバー */
+/* =====================
+   設定入力（day / goal）
+===================== */
+.settings-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.settings-row input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  outline: none;
+  text-align: center;
+  transition: border 0.2s;
+}
+
+.settings-row input:focus {
+  border-color: #38bdf8;
+}
+
+/* =====================
+   進捗バー
+===================== */
 .exp-bar {
   width: 100%;
   height: 12px;
   background: #334155;
-  border-radius: 6px;
+  border-radius: 999px;
   overflow: hidden;
   margin-bottom: 8px;
 }
@@ -50,63 +100,71 @@
   transition: width 0.4s ease;
 }
 
-/* ボタン横並び */
+/* =====================
+   ボタン
+===================== */
 .button-row {
   display: flex;
   gap: 10px;
   margin-top: 10px;
 }
 
-/* XPボタン */
-.take-xp-button {
+/* dayボタン */
+.take-day-button {
   flex: 1;
   padding: 10px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #ffb514;
   cursor: pointer;
   font-weight: bold;
-  transition: transform 0.1s, opacity 0.1s;
+  transition: transform 0.1s, opacity 0.2s;
 }
 
-.take-xp-button:hover {
-  transform: translateY(-1px);
+.take-day-button:hover {
+  transform: translateY(-2px);
   opacity: 0.9;
 }
 
-.take-xp-button:disabled {
-  opacity: 0.4;
+.take-day-button:active {
+  transform: scale(0.96);
+}
+
+.take-day-button:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
 /* 削除ボタン */
 .delete-button {
-  padding: 10px 16px;
+  padding: 10px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #ef4444;
   color: white;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.1s;
+  transition: transform 0.1s, opacity 0.2s;
 }
 
 .delete-button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   opacity: 0.9;
 }
 
-/* 追加ボタン */
+/* =====================
+   追加ボタン
+===================== */
 .add-button {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 12px;
   padding: 12px;
   border: 2px dashed #38bdf8;
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: #38bdf8;
   cursor: pointer;
   font-weight: bold;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s;
 }
 
 .add-button:hover {
@@ -114,7 +172,9 @@
   color: #0f172a;
 }
 
-/* ヘッダー */
+/* =====================
+   ヘッダー
+===================== */
 .header {
   display: flex;
   align-items: center;
@@ -134,24 +194,47 @@
   opacity: 0.7;
 }
 
-.login-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background: #38bdf8;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* メイン */
+/* =====================
+   メイン
+===================== */
 .main {
   padding: 10px 0;
 }
 
-/* フッター */
+/* =====================
+   フッター
+===================== */
 .footer {
-  margin-top: 30px;
+  margin-top: 40px;
   text-align: center;
   font-size: 12px;
-  opacity: 0.6;
+  opacity: 0.5;
+}
+
+/* =====================
+   祝福演出
+===================== */
+.celebration {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 42px;
+  font-weight: bold;
+  color: gold;
+  background: rgba(0,0,0,0.75);
+  animation: pop 0.4s ease;
+  z-index: 1000;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
