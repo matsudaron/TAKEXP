@@ -1,21 +1,59 @@
 import { useState, useEffect } from "react";
 import "../App.css";
 import { supabase } from "../supabase";
+import { useNavigate } from "react-router-dom";
 
 const Top = () => {
   const today = new Date().toDateString();
-  const [celebration, setCelebration] = useState(false);
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [celebration, setCelebration] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+
+  const MAX_GUEST_TASKS = 1;
+  const DEV_MODE = false;
 
   // =========================
-  // 初期ロード
+  // Auth初期化
   // =========================
   useEffect(() => {
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data?.session?.user ?? null);
+      setAuthReady(true);
+    };
+
+    init();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  // =========================
+  // タスク取得
+  // =========================
+  useEffect(() => {
+    if (!authReady) return;
+
+    if (!user?.id) {
+      setTasks([]);
+      return;
+    }
+
     const fetchTasks = async () => {
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
-        .order("id", { ascending: true });
+        .eq("user_id", user.id);
 
       if (error) {
         console.error(error);
@@ -26,9 +64,7 @@ const Top = () => {
     };
 
     fetchTasks();
-  }, []);
-
-  const DEV_MODE = false;
+  }, [user?.id, authReady]);
 
   // =========================
   // +1 day
@@ -50,18 +86,14 @@ const Top = () => {
       .from("tasks")
       .update({
         days: Math.min(nextDays, task.goal),
-        last_claimed: today
+        last_claimed: today,
       })
       .eq("id", task.id)
       .select();
 
-    if (error) {
-      console.error(error);
-      return;
-    }
+    if (error) return console.error(error);
 
     const updated = data?.[0];
-    if (!updated) return;
 
     setTasks((prev) =>
       prev.map((t) => (t.id === task.id ? updated : t))
@@ -72,93 +104,112 @@ const Top = () => {
   // 追加
   // =========================
   const handleAddTask = async () => {
+    if (!user && tasks.length >= MAX_GUEST_TASKS) {
+      alert("ゲストは1つまでしか作れません");
+      return;
+    }
+
+    if (!user) {
+      setTasks((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          name: "",
+          days: 0,
+          goal: 30,
+          last_claimed: null,
+          user_id: null,
+        },
+      ]);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("tasks")
       .insert([
         {
           name: "",
           days: 0,
+          goal: 30,
           last_claimed: null,
-          goal: 30
-        }
+          user_id: user.id,
+        },
       ])
       .select();
 
-    if (error) {
-      console.error(error);
-      return;
-    }
+    if (error) return console.error(error);
 
-    const created = data?.[0];
-    if (!created) return;
-
-    setTasks((prev) => [...prev, created]);
+    setTasks((prev) => [...prev, data[0]]);
   };
 
   // =========================
-  // ローカル変更（即反映）
+  // 更新
   // =========================
-  const handleNameChange = (id, value) => {
+  const handleChange = (id, key, value) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, name: value } : task
+      prev.map((t) =>
+        t.id === id ? { ...t, [key]: value } : t
       )
     );
   };
 
-  const handleGoalChange = (id, value) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, goal: Number(value) } : task
-      )
-    );
-  };
-
-  // =========================
-  // DB保存（onBlur）
-  // =========================
   const saveTask = async (task) => {
-    const { error } = await supabase
+    if (!user) return;
+
+    await supabase
       .from("tasks")
       .update({
         name: task.name,
-        goal: task.goal
+        goal: task.goal,
       })
       .eq("id", task.id);
-
-    if (error) console.error(error);
   };
 
   // =========================
   // 削除
   // =========================
   const handleDelete = async (id) => {
-    const { error } = await supabase
-      .from("tasks")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error(error);
-      return;
+    if (user) {
+      await supabase.from("tasks").delete().eq("id", id);
     }
 
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    setTasks((prev) => prev.filter((t) => t.id !== id));
   };
+
+  // =========================
+  // UI
+  // =========================
+  if (!authReady) {
+    return <div className="loading">loading...</div>;
+  }
 
   return (
     <div className="top-container">
 
       {celebration && (
-        <div className="celebration">
-          🎉 CONGRATULATIONS 🎉
-        </div>
+        <div className="celebration">🎉 CONGRATULATIONS 🎉</div>
       )}
 
       <header className="header">
         <div>
           <h1 className="logo">TAKEXP</h1>
           <p className="subtitle">毎日の積み上げをゲーム化する</p>
+        </div>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          {!user ? (
+            <>
+              <button onClick={() => navigate("/login")}>ログイン</button>
+              <button onClick={() => navigate("/signup")}>新規登録</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => navigate("/profile")}>プロフィール</button>
+              <button onClick={() => supabase.auth.signOut()}>
+                ログアウト
+              </button>
+            </>
+          )}
         </div>
       </header>
 
@@ -168,14 +219,17 @@ const Top = () => {
           const isDone = task.days >= task.goal;
 
           return (
-            <div key={task.id} className={`top-card ${isDone ? "done" : ""}`}>
+            <div
+              key={task.id}
+              className={`top-card ${isDone ? "done" : ""}`}
+            >
 
               <input
                 className="task-input"
                 value={task.name}
-                placeholder="項目名（例：筋トレ）"
+                placeholder="項目（例：筋トレ）"
                 onChange={(e) =>
-                  handleNameChange(task.id, e.target.value)
+                  handleChange(task.id, "name", e.target.value)
                 }
                 onBlur={() => saveTask(task)}
               />
@@ -185,7 +239,7 @@ const Top = () => {
                   type="number"
                   value={task.goal}
                   onChange={(e) =>
-                    handleGoalChange(task.id, e.target.value)
+                    handleChange(task.id, "goal", Number(e.target.value))
                   }
                   onBlur={() => saveTask(task)}
                 />
@@ -195,7 +249,7 @@ const Top = () => {
                 <div
                   className="exp-fill"
                   style={{
-                    width: `${(task.days / task.goal) * 100}%`
+                    width: `${task.goal ? Math.min((task.days / task.goal) * 100, 100) : 0}%`,
                   }}
                 />
               </div>
@@ -229,8 +283,11 @@ const Top = () => {
           );
         })}
 
-        <button className="add-button" onClick={handleAddTask}>
-          ＋ 項目を追加
+        <button
+          className="add-button"
+          onClick={handleAddTask}
+        >
+          ＋追加
         </button>
 
       </main>
