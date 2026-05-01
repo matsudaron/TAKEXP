@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,13 +20,33 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>ログイン</h2>
+    <div className="auth-container">
 
-      <input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" onChange={(e) => setPassword(e.target.value)} />
+      <div className="auth-card">
+        <h2>ログイン</h2>
 
-      <button onClick={login}>ログイン</button>
+        <input
+          className="auth-input"
+          placeholder="email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button className="auth-button" onClick={login}>
+          ログイン
+        </button>
+
+        <p className="auth-link" onClick={() => navigate("/signup")}>
+          アカウント作成はこちら
+        </p>
+      </div>
+
     </div>
   );
 }

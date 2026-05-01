@@ -1,31 +1,86 @@
 import { useState } from "react";
 import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+
   const navigate = useNavigate();
 
-  const signup = async () => {
-    const { error } = await supabase.auth.signUp({
+  const handleSignup = async () => {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error) return alert(error.message);
+    console.log("signup result:", data, error);
 
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const user = data?.user;
+
+    if (user?.id) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          username: username || "no_name",
+        });
+
+      if (profileError) {
+        console.warn(profileError.message);
+      }
+    }
+
+    alert("登録完了！メール確認が必要な場合があります");
     navigate("/");
   };
 
   return (
-    <div>
-      <h2>新規登録</h2>
+    <div className="auth-container">
 
-      <input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" onChange={(e) => setPassword(e.target.value)} />
+      <div className="auth-card">
 
-      <button onClick={signup}>登録</button>
+        <h2>アカウント作成</h2>
+
+        <input
+          className="auth-input"
+          placeholder="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          className="auth-input"
+          placeholder="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <input
+          className="auth-input"
+          placeholder="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <button className="auth-button" onClick={handleSignup}>
+          登録する
+        </button>
+
+        <p className="auth-link" onClick={() => navigate("/login")}>
+          すでにアカウントがある
+        </p>
+
+      </div>
+
     </div>
   );
 }
