@@ -158,7 +158,7 @@ const Top = () => {
         <div>
           <h1 className="logo">TAKEXP</h1>
           <p className="subtitle">
-            {profile?.username || user?.email}
+            {profile?.nickname || user?.email}
           </p>
         </div>
 

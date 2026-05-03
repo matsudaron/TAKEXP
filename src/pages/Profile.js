@@ -17,11 +17,11 @@ export default function Profile() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("username")
+        .select("nickname")
         .eq("id", u.id)
         .single();
 
-      setNickname(profile?.username || "");
+      setNickname(profile?.nickname || "");
     };
 
     init();
@@ -30,20 +30,23 @@ export default function Profile() {
   const update = async () => {
     if (!user) return;
 
+    const updates = {};
+
+    if (nickname.trim() !== "") {
+      updates.nickname = nickname;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      alert("変更がありません");
+      return;
+    }
+
     await supabase
       .from("profiles")
-      .update({ username: nickname })
+      .update(updates)
       .eq("id", user.id);
 
     alert("更新しました");
-  };
-
-  const deleteUserData = async () => {
-    if (!user) return;
-
-    await supabase.from("tasks").delete().eq("user_id", user.id);
-
-    alert("タスク削除完了（ユーザー削除はEdge Function）");
   };
 
   return (
@@ -64,10 +67,6 @@ export default function Profile() {
 
         <button className="profile-button" onClick={update}>
           更新
-        </button>
-
-        <button className="profile-danger" onClick={deleteUserData}>
-          データ削除
         </button>
 
       </div>
