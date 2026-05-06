@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 
-export const useProfile = (userId) => {
-  const [profile, setProfile] = useState(null);
+type Profile = {
+  id: string;
+  nickname: string;
+  username: string;
+};
+
+export const useProfile = (userId: string | undefined) => {
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     if (!userId) return;

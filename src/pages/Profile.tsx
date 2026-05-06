@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 import "../App.css";
+import { User } from "@supabase/supabase-js";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [nickname, setNickname] = useState("");
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Profile() {
   const update = async () => {
     if (!user) return;
 
-    const updates = {};
+    const updates: { nickname?: string } = {};
 
     if (nickname.trim() !== "") {
       updates.nickname = nickname;

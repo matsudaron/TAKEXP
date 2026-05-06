@@ -3,13 +3,24 @@ import "../App.css";
 import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../hooks/useProfile";
+import { User } from "@supabase/supabase-js";
+
+// Taskの型定義
+type Task = {
+  id: string;
+  name: string;
+  days: number;
+  goal: number;
+  last_claimed: string | null;
+  user_id: string;
+};
 
 const Top = () => {
   const today = new Date().toDateString();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
-  const [tasks, setTasks] = useState([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [celebration, setCelebration] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
@@ -63,7 +74,7 @@ const Top = () => {
   // =========================
   // +1 day
   // =========================
-  const handleGainDay = async (task) => {
+  const handleGainDay = async (task: Task) => {
     const isDone = task.days >= task.goal;
 
     if (task.last_claimed === today || isDone) return;
@@ -84,9 +95,11 @@ const Top = () => {
       .eq("id", task.id)
       .select();
 
-    setTasks((prev) =>
-      prev.map((t) => (t.id === task.id ? data[0] : t))
-    );
+    if (data) {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === task.id ? data[0] : t))
+      );
+    }
   };
 
   // =========================
@@ -119,7 +132,7 @@ const Top = () => {
   // =========================
   // 更新
   // =========================
-  const handleChange = (id, key, value) => {
+  const handleChange = (id: string, key: keyof Task, value: string | number) => {
     setTasks((prev) =>
       prev.map((t) =>
         t.id === id ? { ...t, [key]: value } : t
@@ -127,7 +140,7 @@ const Top = () => {
     );
   };
 
-  const saveTask = async (task) => {
+  const saveTask = async (task: Task) => {
     await supabase
       .from("tasks")
       .update({
@@ -140,7 +153,7 @@ const Top = () => {
   // =========================
   // 削除
   // =========================
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     await supabase.from("tasks").delete().eq("id", id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
