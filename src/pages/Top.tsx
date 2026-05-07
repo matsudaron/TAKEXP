@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../App.css";
 import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
@@ -96,8 +96,8 @@ const Top = () => {
       .select();
 
     if (data) {
-      setTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? data[0] : t))
+      setTasks((prev: Task[]) =>
+        prev.map((t: Task) => (t.id === task.id ? data[0] : t))
       );
     }
   };
@@ -126,15 +126,15 @@ const Top = () => {
 
     if (error) return console.error(error);
 
-    setTasks((prev) => [...prev, data[0]]);
+    setTasks((prev: Task[]) => [...prev, data[0]]);
   };
 
   // =========================
   // 更新
   // =========================
   const handleChange = (id: string, key: keyof Task, value: string | number) => {
-    setTasks((prev) =>
-      prev.map((t) =>
+    setTasks((prev: Task[]) =>
+      prev.map((t: Task) =>
         t.id === id ? { ...t, [key]: value } : t
       )
     );
@@ -155,7 +155,7 @@ const Top = () => {
   // =========================
   const handleDelete = async (id: string) => {
     await supabase.from("tasks").delete().eq("id", id);
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    setTasks((prev: Task[]) => prev.filter((t: Task) => t.id !== id));
   };
 
   if (!authReady) return <div>loading...</div>;
@@ -192,7 +192,7 @@ const Top = () => {
 
       <main className="main">
 
-        {tasks.map((task) => (
+        {tasks.map((task: Task) => (
           <div
             key={task.id}
             className={`top-card ${task.days >= task.goal ? "done" : ""}`}
@@ -201,7 +201,7 @@ const Top = () => {
             <input
               className="task-input"
               value={task.name}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange(task.id, "name", e.target.value)
               }
               onBlur={() => saveTask(task)}
@@ -211,7 +211,7 @@ const Top = () => {
               <input
                 type="number"
                 value={task.goal}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange(task.id, "goal", Number(e.target.value))
                 }
                 onBlur={() => saveTask(task)}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 import "../App.css";
 import { User } from "@supabase/supabase-js";
@@ -62,7 +62,7 @@ export default function Profile() {
         <input
           className="profile-input"
           value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNickname(e.target.value)}
           placeholder="nickname"
         />
 

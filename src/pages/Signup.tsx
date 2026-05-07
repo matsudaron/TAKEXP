@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
@@ -53,7 +53,7 @@ export default function Signup() {
           className="auth-input"
           placeholder="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
         />
 
         <input
@@ -61,14 +61,14 @@ export default function Signup() {
           placeholder="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
         />
 
         <input
           className="auth-input"
           placeholder="username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
         />
 
         <button className="auth-button" onClick={handleSignup}>

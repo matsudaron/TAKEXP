@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "../supabase";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
@@ -28,14 +28,14 @@ export default function Login() {
         <input
           className="auth-input"
           placeholder="email"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
         />
 
         <input
           className="auth-input"
           type="password"
           placeholder="password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
         />
 
         <button className="auth-button" onClick={login}>
